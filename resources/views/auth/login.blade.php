@@ -142,6 +142,19 @@
                             style="background-color: #F4A261;">
                             Masuk
                         </button>
+
+                        <!-- ✅ TOMBOL REGISTER -->
+                        <a href="{{ route('register') }}"
+                           class="block w-full text-center py-3 rounded-2xl font-semibold border transition hover:scale-[1.01]"
+                           style="border-color:#F4A261; color:#F4A261;">
+                            Daftar akun baru
+                        </a>
+
+                        <!-- TEXT LINK -->
+                        <div class="text-center text-sm mt-2" style="color: #7b8a97;">
+                            Sudah punya akun admin? gunakan login biasa
+                        </div>
+
                     </form>
 
                     <!-- FOOTER -->

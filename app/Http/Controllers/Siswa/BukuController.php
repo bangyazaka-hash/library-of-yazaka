@@ -7,12 +7,22 @@ use App\Models\Buku;
 use App\Models\Anggota;
 use App\Models\Peminjaman;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class BukuController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $buku = Buku::latest()->paginate(10);
+        $search = $request->search;
+
+        $buku = Buku::when($search, function ($query, $search) {
+                $query->where('judul', 'like', "%{$search}%")
+                      ->orWhere('penulis', 'like', "%{$search}%")
+                      ->orWhere('penerbit', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString(); // 🔥 biar search tidak hilang saat pagination
 
         return view('siswa.buku.index', compact('buku'));
     }

@@ -59,43 +59,6 @@
         </div>
     </div>
 
-    <!-- Statistik Tambahan -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        <div class="rounded-3xl p-6 shadow-sm border bg-white" style="border-color: #f0e8dc;">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-base font-medium mb-2" style="color: #7b8a97;">Transaksi Terlambat</p>
-                    <h3 class="text-4xl font-bold" style="color: #34495E;">
-                        {{ $jumlahTerlambat ?? 0 }}
-                    </h3>
-                </div>
-                <div class="px-4 py-3 rounded-2xl" style="background-color: #fff1f2;">
-                    <span class="text-sm font-semibold" style="color: #dc2626;">Perlu perhatian</span>
-                </div>
-            </div>
-            <p class="text-sm mt-4" style="color: #5f6f7d;">
-                Jumlah buku yang sudah melewati batas pengembalian.
-            </p>
-        </div>
-
-        <div class="rounded-3xl p-6 shadow-sm border bg-white" style="border-color: #f0e8dc;">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-base font-medium mb-2" style="color: #7b8a97;">Total Denda</p>
-                    <h3 class="text-4xl font-bold" style="color: #34495E;">
-                        Rp {{ number_format($totalDenda ?? 0, 0, ',', '.') }}
-                    </h3>
-                </div>
-                <div class="px-4 py-3 rounded-2xl" style="background-color: #fff7ef;">
-                    <span class="text-sm font-semibold" style="color: #F4A261;">Akumulasi</span>
-                </div>
-            </div>
-            <p class="text-sm mt-4" style="color: #5f6f7d;">
-                Total denda dari seluruh transaksi pengembalian terlambat.
-            </p>
-        </div>
-    </div>
-
     <!-- Menu Utama -->
     <div class="mb-10">
         <div class="flex items-center justify-between mb-5">
