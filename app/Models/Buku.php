@@ -19,6 +19,7 @@ class Buku extends Model
         'rak',
         'deskripsi',
         'status',
+        'gambar', // ✅ INI YANG KURANG
     ];
 
     public function peminjaman()

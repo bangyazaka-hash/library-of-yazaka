@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Buku;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BukuController extends Controller
 {
@@ -36,7 +37,7 @@ class BukuController extends Controller
     }
 
     /**
-     * Simpan buku baru
+     * Simpan buku baru (SUDAH ADA GAMBAR)
      */
     public function store(Request $request)
     {
@@ -50,6 +51,7 @@ class BukuController extends Controller
             'stok' => 'required|integer|min:0',
             'rak' => 'nullable|string|max:100',
             'deskripsi' => 'nullable|string',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // ✅ VALIDASI GAMBAR
         ], [
             'kode_buku.required' => 'Kode buku wajib diisi.',
             'kode_buku.unique' => 'Kode buku sudah digunakan.',
@@ -58,20 +60,19 @@ class BukuController extends Controller
             'stok.required' => 'Stok wajib diisi.',
         ]);
 
-        Buku::create([
-            'kode_buku' => $request->kode_buku,
-            'judul' => $request->judul,
-            'penulis' => $request->penulis,
-            'penerbit' => $request->penerbit,
-            'tahun_terbit' => $request->tahun_terbit,
-            'kategori' => $request->kategori,
-            'stok' => $request->stok,
-            'rak' => $request->rak,
-            'deskripsi' => $request->deskripsi,
-            'status' => $request->stok > 0 ? 'tersedia' : 'habis',
-        ]);
+        $data = $request->all();
 
-        return redirect()->route('admin.buku.index')->with('success', 'Data buku berhasil ditambahkan.');
+        // ✅ UPLOAD GAMBAR
+        if ($request->hasFile('gambar')) {
+            $data['gambar'] = $request->file('gambar')->store('buku', 'public');
+        }
+
+        $data['status'] = $request->stok > 0 ? 'tersedia' : 'habis';
+
+        Buku::create($data);
+
+        return redirect()->route('admin.buku.index')
+            ->with('success', 'Data buku berhasil ditambahkan.');
     }
 
     /**
@@ -83,7 +84,7 @@ class BukuController extends Controller
     }
 
     /**
-     * Update data buku
+     * Update data buku (SUDAH SUPPORT UPDATE GAMBAR)
      */
     public function update(Request $request, Buku $buku)
     {
@@ -97,22 +98,28 @@ class BukuController extends Controller
             'stok' => 'required|integer|min:0',
             'rak' => 'nullable|string|max:100',
             'deskripsi' => 'nullable|string',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $buku->update([
-            'kode_buku' => $request->kode_buku,
-            'judul' => $request->judul,
-            'penulis' => $request->penulis,
-            'penerbit' => $request->penerbit,
-            'tahun_terbit' => $request->tahun_terbit,
-            'kategori' => $request->kategori,
-            'stok' => $request->stok,
-            'rak' => $request->rak,
-            'deskripsi' => $request->deskripsi,
-            'status' => $request->stok > 0 ? 'tersedia' : 'habis',
-        ]);
+        $data = $request->all();
 
-        return redirect()->route('admin.buku.index')->with('success', 'Data buku berhasil diperbarui.');
+        // ✅ JIKA ADA GAMBAR BARU
+        if ($request->hasFile('gambar')) {
+
+            // hapus gambar lama
+            if ($buku->gambar) {
+                Storage::disk('public')->delete($buku->gambar);
+            }
+
+            $data['gambar'] = $request->file('gambar')->store('buku', 'public');
+        }
+
+        $data['status'] = $request->stok > 0 ? 'tersedia' : 'habis';
+
+        $buku->update($data);
+
+        return redirect()->route('admin.buku.index')
+            ->with('success', 'Data buku berhasil diperbarui.');
     }
 
     /**
@@ -120,8 +127,14 @@ class BukuController extends Controller
      */
     public function destroy(Buku $buku)
     {
+        // ✅ HAPUS GAMBAR JUGA
+        if ($buku->gambar) {
+            Storage::disk('public')->delete($buku->gambar);
+        }
+
         $buku->delete();
 
-        return redirect()->route('admin.buku.index')->with('success', 'Data buku berhasil dihapus.');
+        return redirect()->route('admin.buku.index')
+            ->with('success', 'Data buku berhasil dihapus.');
     }
 }

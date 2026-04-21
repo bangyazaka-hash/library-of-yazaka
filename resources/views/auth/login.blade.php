@@ -125,12 +125,13 @@
                             </div>
                         </div>
 
+                        <!-- 🔥 DIUBAH DI SINI -->
                         <div class="flex items-center justify-between text-sm">
-                            <label class="flex items-center gap-2 cursor-pointer" style="color: #5f6f7d;">
-                                <input type="checkbox" class="rounded"
-                                    style="accent-color: #F4A261;">
-                                Remember me
-                            </label>
+                            <a href="{{ route('landing') }}"
+                               class="font-semibold hover:underline"
+                               style="color: #5f6f7d;">
+                                Landing Page
+                            </a>
 
                             <span class="font-semibold" style="color: #F4A261;">
                                 Library
@@ -143,21 +144,18 @@
                             Masuk
                         </button>
 
-                        <!-- ✅ TOMBOL REGISTER -->
                         <a href="{{ route('register') }}"
                            class="block w-full text-center py-3 rounded-2xl font-semibold border transition hover:scale-[1.01]"
                            style="border-color:#F4A261; color:#F4A261;">
                             Daftar akun baru
                         </a>
 
-                        <!-- TEXT LINK -->
                         <div class="text-center text-sm mt-2" style="color: #7b8a97;">
                             Sudah punya akun admin? gunakan login biasa
                         </div>
 
                     </form>
 
-                    <!-- FOOTER -->
                     <div class="mt-8 text-center text-sm" style="color: #9aa6b2;">
                         © {{ date('Y') }} Library System
                     </div>

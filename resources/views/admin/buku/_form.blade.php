@@ -1,4 +1,5 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
     <div>
         <label class="block text-sm font-medium mb-2" style="color: #34495E;">Kode Buku</label>
         <input type="text" name="kode_buku" value="{{ old('kode_buku', isset($buku) ? $buku->kode_buku : '') }}"
@@ -78,6 +79,24 @@
             placeholder="Contoh: Rak A1">
     </div>
 
+    <!-- ✅ GAMBAR BUKU (BARU) -->
+    <div class="md:col-span-2">
+        <label class="block text-sm font-medium mb-2" style="color: #34495E;">
+            Gambar Buku
+        </label>
+
+        <input type="file" name="gambar" accept="image/*"
+            class="w-full rounded-2xl px-4 py-3 border"
+            style="background-color: #FDFBF7; border-color: #e8e2d8; color: #34495E;">
+
+        <!-- Preview -->
+        <img id="preview" class="mt-3 w-32 h-40 object-cover rounded-xl hidden">
+
+        @error('gambar')
+            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+        @enderror
+    </div>
+
     <div class="md:col-span-2">
         <label class="block text-sm font-medium mb-2" style="color: #34495E;">Deskripsi</label>
         <textarea name="deskripsi" rows="5"
@@ -85,4 +104,14 @@
             style="background-color: #FDFBF7; border-color: #e8e2d8; color: #34495E;"
             placeholder="Masukkan deskripsi buku...">{{ old('deskripsi', isset($buku) ? $buku->deskripsi : '') }}</textarea>
     </div>
+
 </div>
+
+<!-- 🔥 SCRIPT PREVIEW -->
+<script>
+document.querySelector('input[name="gambar"]').addEventListener('change', function(e){
+    const preview = document.getElementById('preview');
+    preview.src = URL.createObjectURL(e.target.files[0]);
+    preview.classList.remove('hidden');
+});
+</script>

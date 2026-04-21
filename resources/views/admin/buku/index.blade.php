@@ -43,6 +43,7 @@
                 <thead style="background-color: #fff7ef;">
                     <tr>
                         <th class="px-6 py-4 text-left font-semibold">No</th>
+                        <th class="px-6 py-4 text-center font-semibold">Gambar</th> <!-- ✅ BARU -->
                         <th class="px-6 py-4 text-left font-semibold">Kode Buku</th>
                         <th class="px-6 py-4 text-left font-semibold">Judul</th>
                         <th class="px-6 py-4 text-left font-semibold">Penulis</th>
@@ -56,11 +57,23 @@
                     @forelse($buku as $index => $item)
                         <tr class="border-t" style="border-color: #f5eee5;">
                             <td class="px-6 py-4">{{ $buku->firstItem() + $index }}</td>
+
+                            <!-- ✅ GAMBAR -->
+                            <td class="px-6 py-4 text-center">
+                                @if($item->gambar)
+                                    <img src="{{ asset('storage/' . $item->gambar) }}"
+                                         class="w-16 h-20 object-cover rounded-lg mx-auto shadow">
+                                @else
+                                    <span class="text-gray-400 text-xs">No Image</span>
+                                @endif
+                            </td>
+
                             <td class="px-6 py-4 font-medium">{{ $item->kode_buku }}</td>
                             <td class="px-6 py-4">{{ $item->judul }}</td>
                             <td class="px-6 py-4">{{ $item->penulis }}</td>
                             <td class="px-6 py-4">{{ $item->kategori ?? '-' }}</td>
                             <td class="px-6 py-4">{{ $item->stok }}</td>
+
                             <td class="px-6 py-4">
                                 @if($item->status == 'tersedia')
                                     <span class="px-3 py-1 rounded-full text-xs font-semibold"
@@ -74,6 +87,7 @@
                                     </span>
                                 @endif
                             </td>
+
                             <td class="px-6 py-4">
                                 <div class="flex items-center justify-center gap-2">
                                     <a href="{{ route('admin.buku.edit', $item->id) }}"
@@ -97,7 +111,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="px-6 py-10 text-center" style="color: #7b8a97;">
+                            <td colspan="9" class="px-6 py-10 text-center" style="color: #7b8a97;">
                                 Belum ada data buku.
                             </td>
                         </tr>

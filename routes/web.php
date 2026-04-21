@@ -25,20 +25,23 @@ use App\Http\Controllers\Siswa\BukuController as SiswaBukuController;
 |--------------------------------------------------------------------------
 */
 
-// Redirect root ke login
+// ====================
+// 🌐 LANDING PAGE (BARU)
+// ====================
 Route::get('/', function () {
-    return redirect()->route('login');
-});
+    return view('landing');
+})->name('landing');
 
 // ====================
 // AUTH
 // ====================
 Route::middleware('guest')->group(function () {
+
     // LOGIN
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.process');
 
-    // ✅ REGISTER (DITAMBAHKAN)
+    // REGISTER
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register'])->name('register.process');
 });
@@ -50,6 +53,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // ====================
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
 
+    // Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     // CRUD Buku
@@ -65,7 +69,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         ->parameters(['peminjaman' => 'peminjaman'])
         ->except(['show', 'edit', 'update']);
 
-    // Pengembalian (Admin)
+    // Pengembalian
     Route::put('/peminjaman/{peminjaman}/kembalikan', [PeminjamanController::class, 'kembalikan'])
         ->name('peminjaman.kembalikan');
 });
@@ -79,7 +83,7 @@ Route::middleware(['auth', 'siswa'])->prefix('siswa')->name('siswa.')->group(fun
     Route::get('/dashboard', [SiswaDashboardController::class, 'index'])->name('dashboard');
 
     // ====================
-    // 📚 PINJAM BUKU ONLINE (BARU)
+    // 📚 PINJAM BUKU ONLINE
     // ====================
     Route::get('/buku', [SiswaBukuController::class, 'index'])
         ->name('buku.index');

@@ -20,7 +20,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Proses login
+     * Proses login (FIX 🔥)
      */
     public function login(Request $request)
     {
@@ -35,17 +35,31 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            if (Auth::user()->status !== 'aktif') {
+            $user = Auth::user();
+
+            // 🔥 CEK STATUS USER
+            if ($user->status !== 'aktif') {
                 Auth::logout();
                 return back()->with('error', 'Akun Anda tidak aktif.');
             }
 
-            if (Auth::user()->role === 'admin') {
+            // 🔥 CEK STATUS ANGGOTA (PENTING BANGET)
+            if ($user->role === 'siswa') {
+                $anggota = Anggota::where('user_id', $user->id)->first();
+
+                if (!$anggota || $anggota->status !== 'aktif') {
+                    Auth::logout();
+                    return back()->with('error', 'Akun siswa Anda dinonaktifkan.');
+                }
+            }
+
+            // 🔥 REDIRECT SESUAI ROLE
+            if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard')
                     ->with('success', 'Login admin berhasil.');
             }
 
-            if (Auth::user()->role === 'siswa') {
+            if ($user->role === 'siswa') {
                 return redirect()->route('siswa.dashboard')
                     ->with('success', 'Login siswa berhasil.');
             }
@@ -64,7 +78,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Proses register (FIXED 🔥)
+     * Proses register
      */
     public function register(Request $request)
     {
@@ -93,7 +107,7 @@ class AuthController extends Controller
                 'status' => 'aktif',
             ]);
 
-            // 2. 🔥 WAJIB: Buat anggota (biar muncul di admin)
+            // 2. Buat anggota
             Anggota::create([
                 'user_id' => $user->id,
                 'no_anggota' => 'AGT' . rand(100, 999),
@@ -107,7 +121,6 @@ class AuthController extends Controller
 
             DB::commit();
 
-            // auto login
             Auth::login($user);
 
             return redirect()->route('siswa.dashboard')

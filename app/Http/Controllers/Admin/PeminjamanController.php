@@ -12,15 +12,27 @@ use Carbon\Carbon;
 class PeminjamanController extends Controller
 {
     /**
-     * Tampilkan daftar peminjaman
+     * Tampilkan daftar peminjaman + SEARCH
      */
-    public function index()
+    public function index(Request $request)
     {
-        $peminjaman = Peminjaman::with('anggota.user', 'buku')
-            ->latest()
-            ->paginate(8);
+        $search = $request->search;
 
-        return view('admin.peminjaman.index', compact('peminjaman'));
+        $peminjaman = Peminjaman::with('anggota.user', 'buku')
+            ->when($search, function ($query) use ($search) {
+                $query->where('kode_peminjaman', 'like', "%{$search}%")
+                    ->orWhereHas('anggota.user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('buku', function ($q) use ($search) {
+                        $q->where('judul', 'like', "%{$search}%");
+                    });
+            })
+            ->latest()
+            ->paginate(8)
+            ->withQueryString(); // 🔥 biar search tidak hilang saat pagination
+
+        return view('admin.peminjaman.index', compact('peminjaman', 'search'));
     }
 
     /**
@@ -104,7 +116,7 @@ class PeminjamanController extends Controller
 
         if ($today->greaterThan($jatuhTempo)) {
             $hariTerlambat = $jatuhTempo->diffInDays($today);
-            $denda = $hariTerlambat * 1000; // denda Rp1.000/hari
+            $denda = $hariTerlambat * 1000;
             $status = 'terlambat';
         }
 
@@ -126,7 +138,6 @@ class PeminjamanController extends Controller
      */
     public function destroy(Peminjaman $peminjaman)
     {
-        // Jika masih dipinjam, balikin stok dulu
         if ($peminjaman->status === 'dipinjam') {
             $peminjaman->buku->increment('stok');
         }

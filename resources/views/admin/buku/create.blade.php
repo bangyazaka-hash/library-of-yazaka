@@ -14,7 +14,9 @@
 
     <!-- Form Card -->
     <div class="rounded-3xl p-6 md:p-8 shadow-sm border bg-white" style="border-color: #f0e8dc;">
-        <form action="{{ route('admin.buku.store') }}" method="POST" class="space-y-8">
+        
+        <!-- ✅ FIX DI SINI -->
+        <form action="{{ route('admin.buku.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
             @csrf
 
             @include('admin.buku._form')
