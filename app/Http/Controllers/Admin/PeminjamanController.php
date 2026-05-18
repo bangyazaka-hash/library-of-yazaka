@@ -30,7 +30,7 @@ class PeminjamanController extends Controller
             })
             ->latest()
             ->paginate(8)
-            ->withQueryString(); // 🔥 biar search tidak hilang saat pagination
+            ->withQueryString(); // biar search tidak hilang saat pagination
 
         return view('admin.peminjaman.index', compact('peminjaman', 'search'));
     }

@@ -40,6 +40,47 @@
     </div>
 </div>
 
+<!-- 🔥 WARNING TERLAMBAT -->
+@if(isset($terlambat) && $terlambat->count() > 0)
+<div class="mb-8">
+    <div class="rounded-3xl p-5 border flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+         style="background-color:#FEF2F2; border-color:#FCA5A5;">
+
+        <div>
+            <h4 class="text-lg font-semibold mb-1" style="color:#991B1B;">
+                Peringatan Keterlambatan
+            </h4>
+
+            <p class="text-sm mb-2" style="color:#7f1d1d;">
+                Ada {{ $terlambat->count() }} buku yang terlambat dikembalikan.
+            </p>
+
+            <ul class="text-sm space-y-1" style="color:#7f1d1d;">
+                @foreach($terlambat->take(3) as $item)
+                    <li>
+                        • {{ $item->anggota->user->name ?? '-' }} 
+                        - {{ $item->buku->judul ?? '-' }}
+                    </li>
+                @endforeach
+            </ul>
+
+            @if($terlambat->count() > 3)
+                <p class="text-xs mt-1" style="color:#991B1B;">
+                    dan {{ $terlambat->count() - 3 }} lainnya...
+                </p>
+            @endif
+        </div>
+
+        <a href="{{ route('admin.peminjaman.index') }}"
+           class="px-4 py-2 rounded-2xl text-sm font-semibold text-white"
+           style="background-color:#EF4444;">
+            Lihat Detail
+        </a>
+
+    </div>
+</div>
+@endif
+
 <!-- 🔥 STATISTIK CENTER -->
 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-10">
 

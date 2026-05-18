@@ -51,7 +51,7 @@ class BukuController extends Controller
             'stok' => 'required|integer|min:0',
             'rak' => 'nullable|string|max:100',
             'deskripsi' => 'nullable|string',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // ✅ VALIDASI GAMBAR
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', //VALIDASI GAMBAR
         ], [
             'kode_buku.required' => 'Kode buku wajib diisi.',
             'kode_buku.unique' => 'Kode buku sudah digunakan.',
@@ -62,7 +62,7 @@ class BukuController extends Controller
 
         $data = $request->all();
 
-        // ✅ UPLOAD GAMBAR
+        //UPLOAD GAMBAR
         if ($request->hasFile('gambar')) {
             $data['gambar'] = $request->file('gambar')->store('buku', 'public');
         }
@@ -103,7 +103,7 @@ class BukuController extends Controller
 
         $data = $request->all();
 
-        // ✅ JIKA ADA GAMBAR BARU
+        //JIKA ADA GAMBAR BARU
         if ($request->hasFile('gambar')) {
 
             // hapus gambar lama
@@ -127,7 +127,7 @@ class BukuController extends Controller
      */
     public function destroy(Buku $buku)
     {
-        // ✅ HAPUS GAMBAR JUGA
+        //HAPUS GAMBAR JUGA
         if ($buku->gambar) {
             Storage::disk('public')->delete($buku->gambar);
         }

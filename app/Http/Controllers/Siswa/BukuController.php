@@ -14,7 +14,7 @@ class BukuController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
-        $rak = $request->rak; // 🔥 TAMBAHAN FILTER
+        $rak = $request->rak; //TAMBAHAN FILTER
 
         $buku = Buku::when($search, function ($query, $search) {
                 $query->where('judul', 'like', "%{$search}%")
@@ -26,7 +26,7 @@ class BukuController extends Controller
             })
             ->latest()
             ->paginate(10)
-            ->withQueryString(); // 🔥 biar filter tidak hilang
+            ->withQueryString(); //biar filter tidak hilang
 
         return view('siswa.buku.index', compact('buku'));
     }
@@ -36,17 +36,17 @@ class BukuController extends Controller
         $user = Auth::user();
         $anggota = Anggota::where('user_id', $user->id)->first();
 
-        // ❌ kalau anggota tidak ada
+        //kalau anggota tidak ada
         if (!$anggota) {
             return back()->with('error', 'Data anggota tidak ditemukan.');
         }
 
-        // ❌ stok habis
+        //stok habis
         if ($buku->stok <= 0) {
             return back()->with('error', 'Stok buku habis.');
         }
 
-        // ❌ CEGAH PINJAM BUKU YANG SAMA
+        //CEGAH PINJAM BUKU YANG SAMA
         $cek = Peminjaman::where('anggota_id', $anggota->id)
             ->where('buku_id', $buku->id)
             ->where('status', 'dipinjam')
@@ -56,7 +56,7 @@ class BukuController extends Controller
             return back()->with('error', 'Kamu sudah meminjam buku ini.');
         }
 
-        // ✅ GENERATE KODE AMAN (ANTI DUPLIKAT)
+        //GENERATE KODE AMAN (ANTI DUPLIKAT)
         $last = Peminjaman::latest()->first();
 
         $number = $last 
@@ -65,7 +65,6 @@ class BukuController extends Controller
 
         $kode = 'PMJ' . str_pad($number, 3, '0', STR_PAD_LEFT);
 
-        // ✅ SIMPAN
         Peminjaman::create([
             'anggota_id' => $anggota->id,
             'buku_id' => $buku->id,
@@ -75,7 +74,7 @@ class BukuController extends Controller
             'status' => 'dipinjam',
         ]);
 
-        // ✅ kurangi stok
+        //kurangi stok
         $buku->decrement('stok');
 
         return back()->with('success', 'Buku berhasil dipinjam.');

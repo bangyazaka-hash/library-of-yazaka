@@ -20,7 +20,7 @@
      style="border-color: #f0e8dc;">
 
     <div class="overflow-x-auto">
-        <table class="w-full min-w-[950px]">
+        <table class="w-full min-w-[1050px]">
             <thead style="background-color: #FAF3EB;">
                 <tr class="text-left">
                     <th class="px-6 py-5 font-bold">Gambar</th>
@@ -29,6 +29,7 @@
                     <th class="px-6 py-5 font-bold">Tgl Pinjam</th>
                     <th class="px-6 py-5 font-bold">Jatuh Tempo</th>
                     <th class="px-6 py-5 font-bold">Status</th>
+                    <th class="px-6 py-5 font-bold">Denda</th>
                 </tr>
             </thead>
 
@@ -62,23 +63,38 @@
                             {{ \Carbon\Carbon::parse($item->tanggal_jatuh_tempo)->format('d M Y') }}
                         </td>
 
+                        <!-- STATUS -->
                         <td class="px-6 py-5">
                             @if($item->status == 'dikembalikan')
                                 <span class="px-4 py-2 rounded-full text-sm font-semibold"
-                                      style="background-color: #E9EDC9; color: #34495E;">
+                                      style="background-color: #DCFCE7; color: #166534;">
                                     Dikembalikan
                                 </span>
-                            @else
+                            @elseif($item->status == 'terlambat')
                                 <span class="px-4 py-2 rounded-full text-sm font-semibold"
-                                      style="background-color: #F4A261; color: white;">
+                                      style="background-color: #FEE2E2; color: #991B1B;">
                                     Terlambat
                                 </span>
                             @endif
                         </td>
+
+                        <!-- 🔥 DENDA -->
+                        <td class="px-6 py-5">
+                            @if($item->denda > 0)
+                                <span class="font-semibold" style="color:#DC2626;">
+                                    Rp {{ number_format($item->denda, 0, ',', '.') }}
+                                </span>
+                            @else
+                                <span style="color:#7b8a97;">
+                                    Rp 0
+                                </span>
+                            @endif
+                        </td>
+
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-10 text-center" style="color:#7b8a97;">
+                        <td colspan="7" class="px-6 py-10 text-center" style="color:#7b8a97;">
                             Belum ada riwayat pengembalian.
                         </td>
                     </tr>

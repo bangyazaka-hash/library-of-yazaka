@@ -10,19 +10,21 @@
     <h2 class="text-2xl font-semibold" style="color:#34495E;">
         Daftar Buku
     </h2>
+
     <p class="mt-1 text-sm" style="color:#7b8a97;">
         Pilih buku yang ingin kamu pinjam
     </p>
 </div>
 
-<!-- 🔥 SEARCH + FILTER -->
-<form method="GET" action="" class="mb-6">
+<!-- SEARCH + FILTER -->
+<form method="GET" action="" class="mb-8">
+
     <div class="flex flex-wrap gap-3 items-center bg-white border rounded-2xl px-4 py-3 shadow-sm"
          style="border-color:#f0e8dc;">
-        
+
         <!-- SEARCH -->
-        <input 
-            type="text" 
+        <input
+            type="text"
             name="search"
             value="{{ request('search') }}"
             placeholder="Cari judul..."
@@ -30,15 +32,19 @@
             style="color:#34495E;"
         >
 
-        <!-- FILTER RAK -->
-        <select name="rak" class="text-sm rounded-xl px-3 py-1 border"
+        <!-- FILTER -->
+        <select name="rak"
+                class="text-sm rounded-xl px-3 py-1 border"
                 style="border-color:#f0e8dc;">
+
             <option value="">Semua Rak</option>
+
             @foreach($buku->pluck('rak')->unique() as $rak)
                 <option value="{{ $rak }}" {{ request('rak') == $rak ? 'selected' : '' }}>
                     {{ $rak }}
                 </option>
             @endforeach
+
         </select>
 
         <!-- BUTTON -->
@@ -54,130 +60,188 @@
            style="background-color:#f0e8dc; color:#34495E;">
             Reset
         </a>
+
     </div>
+
 </form>
 
-<!-- LIST -->
-<div class="space-y-4">
+<!-- GRID BUKU -->
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
 
     @forelse($buku as $item)
-    <div 
-        onclick="openModal(
-            '{{ $item->judul }}',
-            '{{ $item->penulis }}',
-            '{{ $item->penerbit }}',
-            '{{ $item->tahun_terbit }}',
-            '{{ $item->rak }}',
-            `{{ $item->deskripsi }}`,
-            '{{ $item->gambar ? asset('storage/'.$item->gambar) : asset('images/default-book.png') }}'
-        )"
-        class="cursor-pointer flex items-center justify-between bg-white px-6 py-4 rounded-2xl border shadow-sm hover:shadow-md transition"
-        style="border-color:#f0e8dc;"
-    >
 
-        <!-- KIRI -->
-        <div class="flex items-center gap-5 w-full">
+    <!-- CARD -->
+    <div class="group">
 
-            <!-- GAMBAR -->
-            <img 
+        <!-- COVER -->
+        <div
+            onclick="openModal(
+                '{{ $item->judul }}',
+                '{{ $item->penulis }}',
+                '{{ $item->penerbit }}',
+                '{{ $item->tahun_terbit }}',
+                '{{ $item->rak }}',
+                `{{ $item->deskripsi }}`,
+                '{{ $item->stok }}',
+                '{{ route('siswa.buku.pinjam', $item->id) }}',
+                '{{ $item->gambar ? asset('storage/'.$item->gambar) : asset('images/default-book.png') }}'
+            )"
+
+            class="relative overflow-hidden rounded-2xl shadow-md cursor-pointer"
+        >
+
+            <img
                 src="{{ $item->gambar ? asset('storage/' . $item->gambar) : asset('images/default-book.png') }}"
-                class="w-20 h-28 object-cover rounded-lg shadow"
+                class="w-full h-64 md:h-72 object-cover transition duration-300 group-hover:scale-105"
             >
 
-            <!-- INFO -->
-            <div class="flex flex-col gap-1.5 w-full max-w-xl">
+            <!-- OVERLAY -->
+            <div class="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition"></div>
 
-                <h3 class="font-semibold text-base" style="color:#34495E;">
-                    {{ $item->judul }}
-                </h3>
-
-                <div class="text-xs space-y-0.5" style="color:#7b8a97;">
-                    <p><span class="font-medium">Penulis:</span> {{ $item->penulis }}</p>
-                    <p><span class="font-medium">Penerbit:</span> {{ $item->penerbit }}</p>
-                    <p><span class="font-medium">Tahun:</span> {{ $item->tahun_terbit ?? '-' }}</p>
-                    <p><span class="font-medium">Rak:</span> {{ $item->rak ?? '-' }}</p>
-                </div>
-
-                <!-- DESKRIPSI -->
-                <div class="text-xs mt-1" style="color:#7b8a97;">
-                    <p class="font-medium text-[#34495E]">Deskripsi:</p>
-                    <p>
-                        {{ $item->deskripsi 
-                            ? \Illuminate\Support\Str::limit($item->deskripsi, 100) 
-                            : '-' 
-                        }}
-                    </p>
-
-                    <span class="text-[11px] font-medium" style="color:#F4A261;">
-                        Klik untuk detail →
-                    </span>
-                </div>
-
-                <!-- STOK -->
-                <div class="mt-1">
-                    @if($item->stok > 0)
-                        <span class="text-[11px] px-2.5 py-1 rounded-full"
-                              style="background-color:#f0e8dc; color:#34495E;">
-                            Stok: {{ $item->stok }}
-                        </span>
-                    @else
-                        <span class="text-[11px] px-2.5 py-1 rounded-full bg-gray-200 text-gray-500">
-                            Stok habis
-                        </span>
-                    @endif
-                </div>
-
-            </div>
         </div>
 
-        <!-- BUTTON -->
-        <form action="{{ route('siswa.buku.pinjam', $item->id) }}" method="POST" onclick="event.stopPropagation()">
-            @csrf
+        <!-- TITLE -->
+        <div class="mt-3">
 
-            @if($item->stok > 0)
-                <button class="px-4 py-2 rounded-xl text-white text-sm font-medium hover:scale-105 transition"
-                    style="background-color:#F4A261;">
-                    Pinjam
-                </button>
-            @else
-                <button disabled class="px-4 py-2 rounded-xl bg-gray-300 text-white text-sm">
-                    Habis
-                </button>
-            @endif
-        </form>
+            <h3 class="font-semibold text-sm md:text-base line-clamp-2"
+                style="color:#34495E;">
+
+                {{ $item->judul }}
+
+            </h3>
+
+            <p class="text-xs mt-1"
+               style="color:#7b8a97;">
+
+                {{ $item->penulis }}
+
+            </p>
+
+        </div>
 
     </div>
+
     @empty
-        <div class="text-center py-10 text-sm" style="color:#7b8a97;">
+
+        <div class="col-span-full text-center py-10 text-sm"
+             style="color:#7b8a97;">
+
             Buku tidak ditemukan
+
         </div>
+
     @endforelse
 
 </div>
 
-<!-- 🔥 MODAL POPUP -->
-<div id="modalBuku" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-    
-    <div class="bg-white rounded-3xl w-full max-w-2xl p-6 relative">
+<!-- MODAL -->
+<div id="modalBuku"
+     class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-5">
 
-        <button onclick="closeModal()" class="absolute top-4 right-4 text-lg">✕</button>
+    <!-- BOX -->
+    <div class="bg-white rounded-3xl w-full max-w-3xl p-6 relative">
 
-        <div class="flex gap-6">
+        <!-- CLOSE -->
+        <button onclick="closeModal()"
+                class="absolute top-4 right-4 text-lg text-gray-500 hover:text-black">
 
-            <img id="modalGambar" class="w-28 h-40 object-cover rounded-xl shadow">
+            ✕
 
-            <div class="flex flex-col gap-2 text-sm">
+        </button>
 
-                <h2 id="modalJudul" class="text-lg font-semibold text-[#34495E]"></h2>
+        <div class="flex flex-col md:flex-row gap-6">
 
-                <p><b>Penulis:</b> <span id="modalPenulis"></span></p>
-                <p><b>Penerbit:</b> <span id="modalPenerbit"></span></p>
-                <p><b>Tahun:</b> <span id="modalTahun"></span></p>
-                <p><b>Rak:</b> <span id="modalRak"></span></p>
+            <!-- IMAGE -->
+            <img id="modalGambar"
+                 class="w-full md:w-56 h-80 object-cover rounded-2xl shadow">
 
-                <div class="mt-2">
-                    <p class="font-semibold">Deskripsi:</p>
-                    <p id="modalDeskripsi" class="text-xs text-gray-600"></p>
+            <!-- CONTENT -->
+            <div class="flex flex-col justify-between w-full">
+
+                <div>
+
+                    <h2 id="modalJudul"
+                        class="text-2xl font-bold text-[#34495E]">
+                    </h2>
+
+                    <div class="mt-4 space-y-2 text-sm text-gray-600">
+
+                        <p>
+                            <span class="font-semibold text-[#34495E]">
+                                Penulis:
+                            </span>
+
+                            <span id="modalPenulis"></span>
+                        </p>
+
+                        <p>
+                            <span class="font-semibold text-[#34495E]">
+                                Penerbit:
+                            </span>
+
+                            <span id="modalPenerbit"></span>
+                        </p>
+
+                        <p>
+                            <span class="font-semibold text-[#34495E]">
+                                Tahun:
+                            </span>
+
+                            <span id="modalTahun"></span>
+                        </p>
+
+                        <p>
+                            <span class="font-semibold text-[#34495E]">
+                                Rak:
+                            </span>
+
+                            <span id="modalRak"></span>
+                        </p>
+
+                        <p>
+                            <span class="font-semibold text-[#34495E]">
+                                Stok:
+                            </span>
+
+                            <span id="modalStok"></span>
+                        </p>
+
+                    </div>
+
+                    <!-- DESKRIPSI -->
+                    <div class="mt-5">
+
+                        <h3 class="font-semibold text-[#34495E] mb-2">
+                            Deskripsi
+                        </h3>
+
+                        <p id="modalDeskripsi"
+                           class="text-sm text-gray-600 leading-relaxed">
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <!-- BUTTON -->
+                <div class="mt-6">
+
+                    <form id="modalPinjamForm" method="POST">
+
+                        @csrf
+
+                        <button
+                            id="modalPinjamButton"
+                            type="submit"
+                            class="w-full md:w-auto px-6 py-3 rounded-2xl text-white font-medium hover:scale-105 transition"
+                            style="background-color:#F4A261;">
+
+                            Pinjam Buku
+
+                        </button>
+
+                    </form>
+
                 </div>
 
             </div>
@@ -185,24 +249,74 @@
         </div>
 
     </div>
+
 </div>
 
 <script>
-function openModal(judul, penulis, penerbit, tahun, rak, deskripsi, gambar) {
-    document.getElementById('modalBuku').classList.remove('hidden');
+
+function openModal(
+    judul,
+    penulis,
+    penerbit,
+    tahun,
+    rak,
+    deskripsi,
+    stok,
+    pinjamUrl,
+    gambar
+) {
+
+    const modal = document.getElementById('modalBuku');
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
 
     document.getElementById('modalJudul').innerText = judul;
     document.getElementById('modalPenulis').innerText = penulis;
     document.getElementById('modalPenerbit').innerText = penerbit;
     document.getElementById('modalTahun').innerText = tahun;
     document.getElementById('modalRak').innerText = rak;
+    document.getElementById('modalStok').innerText = stok;
     document.getElementById('modalDeskripsi').innerText = deskripsi;
     document.getElementById('modalGambar').src = gambar;
+
+    // FORM PINJAM
+    document.getElementById('modalPinjamForm').action = pinjamUrl;
+
+    // BUTTON
+    const btn = document.getElementById('modalPinjamButton');
+
+    if (parseInt(stok) > 0) {
+
+        btn.disabled = false;
+
+        btn.innerText = 'Pinjam Buku';
+
+        btn.classList.remove('bg-gray-300', 'cursor-not-allowed');
+
+        btn.style.backgroundColor = '#F4A261';
+
+    } else {
+
+        btn.disabled = true;
+
+        btn.innerText = 'Stok Habis';
+
+        btn.style.backgroundColor = '#D1D5DB';
+
+    }
+
 }
 
 function closeModal() {
-    document.getElementById('modalBuku').classList.add('hidden');
+
+    const modal = document.getElementById('modalBuku');
+
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+
 }
+
 </script>
 
 @endsection
